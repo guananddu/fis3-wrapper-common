@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+var Liftoff = require( 'liftoff' );
+var argv = require( 'minimist' )( process.argv.slice( 2 ) );
+var path = require( 'path' );
+
+var cli = new Liftoff( {
+    name: 'fis3b',
+    processTitle: 'fis',
+    moduleName: 'fis3b',
+    configName: 'fis-conf',
+
+    // only js supported!
+    extensions: {
+        '.js': null
+    }
+} );
+
+cli.launch( {
+    cwd: argv.r || argv.root,
+    configPath: argv.f || argv.file
+}, function( env ) {
+
+    var fis;
+    if ( !env.modulePath ) {
+        fis = require( '../' );
+    } else {
+        fis = require( env.modulePath );
+    }
+    fis.set( 'system.localNPMFolder',
+        path.join( env.cwd, 'node_modules/fis3-wrapper-common' ) );
+    fis.set( 'system.globalNPMFolder', path.dirname( __dirname ) );
+    fis.cli.name = this.name;
+
+    // 提前读取配置文件
+    require( env.configPath );
+    // console.log( fis.config.get( 'project.dependencies' ) );
+
+    var dependencies = fis.config.get( 'project.dependencies' );
+
+    require( '../lib/beforebuild' )( dependencies, env );
+
+    // 调用常规API
+    fis.cli.run( argv, env );
+
+    var isWatching = argv.w || argv.watch;
+
+    // 非watch的build需要立即调用清理
+    if ( !isWatching )
+        return require( '../lib/afterbuild' )( dependencies, env );
+
+    process.stdin.resume();
+    !onter.hooked && process.on( 'SIGINT', onter.bind(
+        { dependencies: dependencies, env: env }
+    ) );
+    // process.on( 'SIGTERM', onter );
+
+} );
+
+/**
+ * 简易单例
+ * @type {{hooked, bind}}
+ */
+var onter = function () {
+
+    var instance;
+
+    return {
+        hooked: false,
+        bind: function ( context ) {
+            !instance && (
+                instance = ter.bind( context ),
+                onter.hooked = true
+            );
+            return instance;
+        }
+    };
+
+}();
+
+function ter () {
+    require( '../lib/afterbuild' )( this.dependencies, this.env );
+    console.log( '\nProcess:' + process.pid + ' Will Exit.' );
+    setTimeout( function () {
+        process.exit( 0 );
+    }, 10 );
+}

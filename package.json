@@ -1,0 +1,41 @@
+{
+  "name": "fis3-wrapper-common",
+  "version": "1.0.1",
+  "description": "Fis3 Wrapper For Common Resources",
+  "bin": {
+    "fis3b": "bin/fis3b"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "bin/fis3b"
+  },
+  "keywords": [
+    "fis3"
+  ],
+  "author": "pooky",
+  "license": "ISC",
+  "dependencies": {
+    "fis-optimizer-clean-css": "0.0.12",
+    "fis-optimizer-html-minifier": "0.0.9",
+    "fis-optimizer-uglify-js": "^0.1.14",
+    "fis-parser-handlebars-3.x": "0.0.1",
+    "fis-parser-less-2.x": "^0.1.4",
+    "fis-postprocessor-jswrapper": "0.0.12",
+    "fis-postprocessor-require-async": "0.0.9",
+    "fis3": "^3.2.0",
+    "fis3-hook-amd": "^0.1.3",
+    "fis3-hook-commonjs": "^0.1.1",
+    "fis3-parser-babel": "^1.0.12",
+    "fis3-postpackager-loader": "^1.3.2",
+    "fis3-standard-html-django": "^1.0.1",
+    "liftoff": "^2.2.0",
+    "minimist": "^1.2.0",
+    "parse-gitignore": "^0.2.0",
+    "shelljs": "^0.5.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guananddu"
+  }
+}
