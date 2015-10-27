@@ -71,7 +71,7 @@ cli.launch( {
  * @param argv
  */
 function checkIsRelease( argv ) {
-    return ~ argv[ '_' ].indexOf( 'release' );
+    return ( ~ argv[ '_' ].indexOf( 'release' ) ) && !argv.help;
 }
 
 /**
