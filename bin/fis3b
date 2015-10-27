@@ -32,30 +32,44 @@ cli.launch( {
     fis.set( 'system.globalNPMFolder', path.dirname( __dirname ) );
     fis.cli.name = this.name;
 
-    // 提前读取配置文件
-    require( env.configPath );
-    // console.log( fis.config.get( 'project.dependencies' ) );
+    var isRelease = checkIsRelease( argv );
 
-    var dependencies = fis.config.get( 'project.dependencies' );
+    if ( isRelease ) {
+        // 提前读取配置文件
+        require( env.configPath );
+        // console.log( fis.config.get( 'project.dependencies' ) );
 
-    require( '../lib/beforebuild' )( dependencies, env );
+        var dependencies = fis.config.get( 'project.dependencies' );
+
+        require( '../lib/beforebuild' )( dependencies, env );
+    }
 
     // 调用常规API
     fis.cli.run( argv, env );
 
-    var isWatching = argv.w || argv.watch;
+    if ( isRelease ) {
+        var isWatching = argv.w || argv.watch;
 
-    // 非watch的build需要立即调用清理
-    if ( !isWatching )
-        return require( '../lib/afterbuild' )( dependencies, env );
+        // 非watch的build需要立即调用清理
+        if ( !isWatching )
+            return require( '../lib/afterbuild' )( dependencies, env );
 
-    process.stdin.resume();
-    !onter.hooked && process.on( 'SIGINT', onter.bind(
-        { dependencies: dependencies, env: env }
-    ) );
-    // process.on( 'SIGTERM', onter );
+        process.stdin.resume();
+        !onter.hooked && process.on( 'SIGINT', onter.bind(
+            { dependencies: dependencies, env: env }
+        ) );
+        // process.on( 'SIGTERM', onter );
+    }
 
 } );
+
+/**
+ * 检查是不是在执行release命令
+ * @param argv
+ */
+function checkIsRelease( argv ) {
+    return ~ argv[ '_' ].indexOf( 'release' );
+}
 
 /**
  * 简易单例
