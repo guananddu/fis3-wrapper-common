@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
+require( 'shelljs/global' );
 var Liftoff = require( 'liftoff' );
 var argv = require( 'minimist' )( process.argv.slice( 2 ) );
 var path = require( 'path' );
 var fis3bcli = require( '../lib/fis3bcli' );
+
+global.fis3argv = argv;
 
 var cli = new Liftoff( {
     name: 'fis3b',

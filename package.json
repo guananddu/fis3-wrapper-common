@@ -1,6 +1,6 @@
 {
   "name": "fis3-wrapper-common",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Fis3 Wrapper For Common Resources",
   "bin": {
     "fis3b": "bin/fis3b"
@@ -29,9 +29,12 @@
     "fis3-postpackager-loader": "^1.3.2",
     "fis3-standard-html-django": "^1.0.1",
     "liftoff": "^2.2.0",
+    "lockfile": "^1.0.1",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "parse-gitignore": "^0.2.0",
-    "shelljs": "^0.5.3"
+    "shelljs": "^0.5.3",
+    "watch": "^0.16.0"
   },
   "devDependencies": {},
   "repository": {
