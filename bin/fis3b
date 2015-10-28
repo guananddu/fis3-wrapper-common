@@ -66,15 +66,35 @@ cli.launch( {
         process.on( 'SIGINT', onter.bind(
             { dependencies: dependencies, env: env }
         ) );
-        // win32
-        if ( process.platform == 'win32' ) {
-            var rl = require( 'readline' ).createInterface( {
-                input: process.stdin,
-                output: process.stdout
-            } );
 
-            rl.on( 'SIGINT', function() {
-                process.emit( 'SIGINT' );
+        // win32 works on cmd window, but not git bash! : (
+        //if ( process.platform == 'win32' ) {
+        //    var rl = require( 'readline' ).createInterface( {
+        //        input: process.stdin,
+        //        output: process.stdout
+        //    } );
+        //
+        //    rl.on( 'SIGINT', function() {
+        //        process.emit( 'SIGINT' );
+        //    } );
+        //}
+
+        // Windows doesn't use POSIX signals
+        if ( process.platform === 'win32' ) {
+            const keypress = require( 'keypress' );
+            keypress( process.stdin );
+            process.stdin.resume();
+            process.stdin.setRawMode( true );
+            process.stdin.setEncoding( 'utf8' );
+            process.stdin.on( 'keypress', function( char, key ) {
+                if ( key && key.ctrl && key.name == 'c' ) {
+                    // Behave like a SIGUSR2
+                    // process.emit( 'SIGUSR2' );
+                    process.emit( 'SIGINT' );
+                } else if ( key && key.ctrl && key.name == 'r' ) {
+                    // Behave like a SIGHUP
+                    process.emit( 'SIGHUP' );
+                }
             } );
         }
 
