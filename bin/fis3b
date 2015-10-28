@@ -84,7 +84,8 @@ cli.launch( {
             const keypress = require( 'keypress' );
             keypress( process.stdin );
             process.stdin.resume();
-            process.stdin.setRawMode( true );
+            // 可能会报错，加入容错处理
+            process.stdin.setRawMode && process.stdin.setRawMode( true );
             process.stdin.setEncoding( 'utf8' );
             process.stdin.on( 'keypress', function( char, key ) {
                 if ( key && key.ctrl && key.name == 'c' ) {
@@ -97,6 +98,10 @@ cli.launch( {
                 }
             } );
         }
+
+        // TODO
+        // 上述两个方法在win32平台下，只对原生cmd窗口生效
+        // git bash下的stdin会被提前捕获导致不生效
 
     }
 
