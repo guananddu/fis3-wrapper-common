@@ -1,6 +1,6 @@
 {
   "name": "fis3-wrapper-common",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Fis3 Wrapper For Common Resources",
   "bin": {
     "fis3b": "bin/fis3b"
