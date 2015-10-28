@@ -61,10 +61,23 @@ cli.launch( {
             return require( '../lib/afterbuild' )( dependencies, env );
 
         process.stdin.resume();
-        !onter.hooked && process.on( 'SIGINT', onter.bind(
+        if ( onter.hooked ) return;
+
+        process.on( 'SIGINT', onter.bind(
             { dependencies: dependencies, env: env }
         ) );
-        // process.on( 'SIGTERM', onter );
+        // win32
+        if ( process.platform == 'win32' ) {
+            var rl = require( 'readline' ).createInterface( {
+                input: process.stdin,
+                output: process.stdout
+            } );
+
+            rl.on( 'SIGINT', function() {
+                process.emit( 'SIGINT' );
+            } );
+        }
+
     }
 
 } );
@@ -101,7 +114,7 @@ var onter = function () {
 function ter () {
     require( '../lib/afterbuild' )( this.dependencies, this.env );
     console.log( '\nProcess:' + process.pid + ' Will Exit.' );
-    setTimeout( function () {
+    process.nextTick( function () {
         process.exit( 0 );
-    }, 10 );
+    } );
 }
