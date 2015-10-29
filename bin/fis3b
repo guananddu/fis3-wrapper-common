@@ -5,6 +5,7 @@ var Liftoff = require( 'liftoff' );
 var argv = require( 'minimist' )( process.argv.slice( 2 ) );
 var path = require( 'path' );
 var fis3bcli = require( '../lib/fis3bcli' );
+var utils = require( '../lib/utils' );
 
 global.fis3argv = argv;
 
@@ -36,7 +37,7 @@ cli.launch( {
     fis.set( 'system.globalNPMFolder', path.dirname( __dirname ) );
     fis.cli.name = this.name;
 
-    if ( fis3bcli( argv, fis ) ) return;
+    if ( fis3bcli( argv, fis, env ) ) return;
 
     var isRelease = checkIsRelease( argv );
 
@@ -67,8 +68,10 @@ cli.launch( {
             { dependencies: dependencies, env: env }
         ) );
 
+        // process.on( 'exit', onter.bind() );
+
         // win32 works on cmd window, but not git bash! : (
-        //if ( process.platform == 'win32' ) {
+        //if ( process.platform == utils.platform.win32 ) {
         //    var rl = require( 'readline' ).createInterface( {
         //        input: process.stdin,
         //        output: process.stdout
@@ -80,7 +83,7 @@ cli.launch( {
         //}
 
         // Windows doesn't use POSIX signals
-        if ( process.platform === 'win32' ) {
+        if ( process.platform === utils.platform.win32 ) {
             const keypress = require( 'keypress' );
             keypress( process.stdin );
             process.stdin.resume();
