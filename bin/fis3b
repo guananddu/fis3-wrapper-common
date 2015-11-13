@@ -9,6 +9,8 @@ var utils = require( '../lib/utils' );
 
 global.fis3argv = argv;
 
+global.watchesTree = [ ];
+
 var cli = new Liftoff( {
     name: 'fis3b',
     processTitle: 'fis',
@@ -140,9 +142,10 @@ var onter = function () {
 }();
 
 function ter () {
+    // stop watching!!!!
     require( '../lib/afterbuild' )( this.dependencies, this.env );
     console.log( '\nProcess:' + process.pid + ' Will Exit.' );
-    process.nextTick( function () {
+    // process.nextTick( function () {
         process.exit( 0 );
-    } );
+    // } );
 }
