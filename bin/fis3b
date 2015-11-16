@@ -6,6 +6,7 @@ var argv = require( 'minimist' )( process.argv.slice( 2 ) );
 var path = require( 'path' );
 var fis3bcli = require( '../lib/fis3bcli' );
 var utils = require( '../lib/utils' );
+var fs = require( 'fs' );
 
 global.fis3argv = argv;
 
@@ -59,6 +60,20 @@ cli.launch( {
     if ( isRelease ) {
         var isWatching = argv.w || argv.watch;
 
+        if ( isWatching ) {
+            // 如果在启动之初发现有别的watching mark文件，则标记之
+            if ( fs.existsSync( utils.mark.watching ) ) {
+                global.fis3IsWatching = true;
+            }
+            else {
+                // 若没有则是第一个watching
+                fs.writeFileSync(
+                    path.join( env.cwd, utils.mark.watching ),
+                    process.pid
+                );
+            }
+        }
+
         // 非watch的build需要立即调用清理
         if ( !isWatching )
             return require( '../lib/afterbuild' )( dependencies, env );
@@ -69,6 +84,11 @@ cli.launch( {
         process.on( 'SIGINT', onter.bind(
             { dependencies: dependencies, env: env }
         ) );
+
+        process.on( 'uncaughtException', function( err ) {
+            console.log( 'Caught exception: ' + err );
+            onter.bind().call( null );
+        } );
 
         // process.on( 'exit', onter.bind() );
 
