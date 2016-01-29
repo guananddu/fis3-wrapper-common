@@ -40,6 +40,8 @@ cli.launch( {
     fis.set( 'system.globalNPMFolder', path.dirname( __dirname ) );
     fis.cli.name = this.name;
 
+    // console.log( argv ); return;
+
     if ( fis3bcli( argv, fis, env ) ) return;
 
     var isRelease = checkIsRelease( argv );
