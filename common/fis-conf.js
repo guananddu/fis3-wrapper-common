@@ -353,10 +353,10 @@ for ( var username in REMOTE_TARGET_MAP ) {
                     to: cur.deploy[ selector ]
                 } )
             } );
-            fis.media( username ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
-               useHash: false,
-               domain: null
-            } );
+            //fis.media( username ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
+            //   useHash: false,
+            //   domain: null
+            //} );
         }
     } )( username );
 }
