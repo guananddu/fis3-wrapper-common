@@ -44,7 +44,7 @@ cli.launch( {
 
     // 读取通用配置文件
     global.fisConfPath = env.configPath;
-    require( '../common/fis-conf' );
+    global.fisConfPath && require( '../common/fis-conf' );
 
     var isRelease = checkIsRelease( argv );
 
