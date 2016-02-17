@@ -40,19 +40,16 @@ cli.launch( {
     fis.set( 'system.globalNPMFolder', path.dirname( __dirname ) );
     fis.cli.name = this.name;
 
-    // console.log( argv ); return;
-
     if ( fis3bcli( argv, fis, env ) ) return;
+
+    // 读取通用配置文件
+    global.fisConfPath = env.configPath;
+    require( '../common/fis-conf' );
 
     var isRelease = checkIsRelease( argv );
 
     if ( isRelease ) {
-        // 提前读取配置文件
-        require( env.configPath );
-        // console.log( fis.config.get( 'project.dependencies' ) );
-
         var dependencies = fis.config.get( 'project.dependencies' );
-
         require( '../lib/beforebuild' )( dependencies, env );
     }
 
@@ -91,8 +88,6 @@ cli.launch( {
             console.log( 'Caught exception: ' + err );
             onter.bind().call( null );
         } );
-
-        // process.on( 'exit', onter.bind() );
 
         // win32 works on cmd window, but not git bash! : (
         //if ( process.platform == utils.platform.win32 ) {
