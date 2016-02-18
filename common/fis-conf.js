@@ -11,11 +11,15 @@ var CURR_PROJECT_DIR = process.cwd();
 var CURR_PROJECT = path.basename( CURR_PROJECT_DIR );
 
 // 静态资源前缀
-var STATIC_PREFIX = fis.config.get( 'build.staticPrefix' )
-    || path.join( 'resource', CURR_PROJECT );
+var buildStaticPrefix = fis.config.get( 'build.staticPrefix' );
+var STATIC_PREFIX = buildStaticPrefix != undefined
+    ? buildStaticPrefix
+    : path.join( 'resource', CURR_PROJECT );
 // 模板资源前缀
-var TPL_PREFIX = fis.config.get( 'build.tplPrefix' )
-    || path.join( 'template', CURR_PROJECT );
+var buildTplPrefix = fis.config.get( 'build.tplPrefix' );
+var TPL_PREFIX = buildTplPrefix != undefined
+    ? buildTplPrefix
+    : path.join( 'template', CURR_PROJECT );
 
 // 静态资源的发布目录
 var STATIC_TARGET = STATIC_PREFIX + '$0';
