@@ -62,10 +62,15 @@ fis.match( '*.html', {
         TEMPLATE_REPLACE,
         fis.plugin( 'pagelet', {
             scriptTag: PAGELET_SCRIPT_TAG,
-            styleTag: PAGELET_STYLE_TAG
+            styleTag: PAGELET_STYLE_TAG,
+            // 默认都是false
+            inline: fis.config.get( 'build.pageletInline' )
         } )
     ],
     // 测试htmlmin
+    optimizer: fis.config.get( 'build.htmlMin' )
+        ? [ OPTIMIZER_HTML_MIN ]
+        : null,
     //optimizer: [
     //    fis.plugin( 'htmlmin', {
     //        jsmin: false,
@@ -159,23 +164,23 @@ fis.match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
 fis.hook( 'amd' );
 
 fis.match( '/{widget,pagelet}/**/*.js', {
-    isMod: true
-} );
-
-fis.match( '/{widget,pagelet}/**/*.js', {
-    postprocessor: fis.plugin( 'jswrapper', {
-        type: 'amd'
-    } )
-} );
-
-fis.match( '/tt_common/{widget,pagelet}/**/*.js', {
-    isMod: true
+    isMod: true,
+    postprocessor: [
+        fis.plugin( 'jswrapper', {
+            type: 'amd'
+        } ),
+        'require-async'
+    ]
 } );
 
 fis.match( '/tt_common/{widget,pagelet}/**/*.js', {
-    postprocessor: fis.plugin( 'jswrapper', {
-        type: 'amd'
-    } )
+    isMod: true,
+    postprocessor: [
+        fis.plugin( 'jswrapper', {
+            type: 'amd'
+        } ),
+        'require-async'
+    ]
 } );
 
 //------------------------------以下配置针对online部署---------------------------------//
@@ -286,7 +291,9 @@ fis.media( 'local' ).match( '*.html', {
         TEMPLATE_REPLACE_4LOCAL,
         fis.plugin( 'pagelet', {
             scriptTag: PAGELET_SCRIPT_TAG,
-            styleTag: PAGELET_STYLE_TAG
+            styleTag: PAGELET_STYLE_TAG,
+            // 默认都是false
+            inline: fis.config.get( 'build.pageletInline' )
         } )
     ],
     release: '$0'
@@ -325,7 +332,9 @@ fis.media( 'dlocal' ).match( '*.html', {
         DJANGO_REPLACE,
         fis.plugin( 'pagelet', {
             scriptTag: PAGELET_SCRIPT_TAG,
-            styleTag: PAGELET_STYLE_TAG
+            styleTag: PAGELET_STYLE_TAG,
+            // 默认都是false
+            inline: fis.config.get( 'build.pageletInline' )
         } )
     ],
     // 调起django插件
@@ -499,6 +508,10 @@ function DJANGO_SPECIAL_REPLACE( content, file, settings ) {
 
 // 最后再读取用户配置【用户配置为准】
 // require( global.fisConfPath );
+
+function OPTIMIZER_HTML_MIN ( content, file, settings ) {
+    return content.replace( />\s*</g, '><' );
+}
 
 function o () {
     return console.log.apply( console, arguments );
