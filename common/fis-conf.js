@@ -510,7 +510,7 @@ function DJANGO_SPECIAL_REPLACE( content, file, settings ) {
 // require( global.fisConfPath );
 
 function OPTIMIZER_HTML_MIN ( content, file, settings ) {
-    return content.replace( />\s*</g, '><' );
+    return content.replace( />[\s\r\n\t]*</g, '><' );
 }
 
 function o () {
