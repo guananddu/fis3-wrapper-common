@@ -57,6 +57,7 @@ fis.match( '*', {
 // 模板
 fis.match( '*.html', {
     parser: [
+        AUTOCHECK_TPLROOT,
         STATIC_PATH_REPLACE,
         REQUIRE_ROOT_REPLACE,
         TEMPLATE_REPLACE,
@@ -156,7 +157,10 @@ fis.match( '*.scss', {
     } )
 } );
 
-fis.match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
+// 静态资源的模式匹配
+var STATIC_PATTERN = '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}';
+
+fis.match( STATIC_PATTERN, {
     useHash: true,
     domain: STATIC_DOMAIN
 } );
@@ -181,75 +185,6 @@ fis.match( '/tt_common/{widget,pagelet}/**/*.js', {
         } ),
         'require-async'
     ]
-} );
-
-//------------------------------以下配置针对online部署---------------------------------//
-
-fis.media( 'online' ).match( '*.{less,scss,css}', {
-    optimizer: fis.plugin( 'clean-css' )
-} );
-
-fis.media( 'online' ).match( '*.{js,es6,tmpl,hmpl}', {
-    optimizer: fis.plugin( 'uglify-js' )
-} );
-
-/* 以下两处为上线路径配置 */
-
-// 静态资源
-fis.media( 'online' ).match( '*', {
-    release: path.join( 'webroot', STATIC_TARGET ),
-    url : path.join( '/', STATIC_TARGET )
-} );
-
-// 模板
-fis.media( 'online' ).match( '*.html', {
-    release: path.join( 'djangosite/templates', TPL_TARGET )
-} );
-
-//------------------------------以下配置针对newol部署---------------------------------//
-
-fis.media( 'newol' ).match( '*.{less,scss,css}', {
-    optimizer: fis.plugin( 'clean-css' )
-} );
-
-fis.media( 'newol' ).match( '*.{js,es6,tmpl,hmpl}', {
-    optimizer: fis.plugin( 'uglify-js' )
-} );
-
-/* 以下两处为上线路径配置 */
-
-// 静态资源
-fis.media( 'newol' ).match( '*', {
-    release: path.join( '', STATIC_TARGET ),
-    url : path.join( '/', STATIC_TARGET )
-} );
-
-// 模板
-fis.media( 'newol' ).match( '*.html', {
-    release: path.join( '', TPL_TARGET )
-} );
-
-//------------------------------以下配置针对/opt/tiger/toutiao部署---------------------------------//
-
-fis.media( 'toutiao' ).match( '*.{less,scss,css}', {
-    optimizer: fis.plugin( 'clean-css' )
-} );
-
-fis.media( 'toutiao' ).match( '*.{js,es6,tmpl,hmpl}', {
-    optimizer: fis.plugin( 'uglify-js' )
-} );
-
-/* 以下两处为上线路径配置 */
-
-// 静态资源
-fis.media( 'toutiao' ).match( '*', {
-    release: path.join( 'webroot', STATIC_TARGET ),
-    url : path.join( '/', STATIC_TARGET )
-} );
-
-// 模板
-fis.media( 'toutiao' ).match( '*.html', {
-    release: path.join( 'templates', TPL_TARGET )
 } );
 
 //------------------------------以下配置针对default-online---------------------------------//
@@ -285,6 +220,7 @@ fis.media( 'local' ).match( '*', {
 // 模板
 fis.media( 'local' ).match( '*.html', {
     parser: [
+        AUTOCHECK_TPLROOT,
         DJANGO_SPECIAL_REPLACE,
         STATIC_PATH_REPLACE,
         REQUIRE_ROOT_REPLACE_4LOCAL,
@@ -299,7 +235,7 @@ fis.media( 'local' ).match( '*.html', {
     release: '$0'
 } );
 
-fis.media( 'local' ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
+fis.media( 'local' ).match( STATIC_PATTERN, {
     useHash: false,
     domain: null
 } );
@@ -309,7 +245,7 @@ fis.media( 'local' ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
 // 需要注册django母模板的模板【在这里注册以后，在发布时这几个文件就会被编译成纯粹的html】
 var djangoExportTpl = [
     '{',
-        '/page/index/recommend4dj.html',
+        '/page/index/example.html',
     '}'
 ].join( ',' );
 
@@ -326,6 +262,7 @@ fis.media( 'dlocal' ).match( '*', {
 // 在local的情况下调试，才会调用django的mock数据
 fis.media( 'dlocal' ).match( '*.html', {
     parser: [
+        AUTOCHECK_TPLROOT,
         DJANGO_SPECIAL_REPLACE,
         STATIC_PATH_REPLACE,
         REQUIRE_ROOT_REPLACE_4LOCAL,
@@ -342,7 +279,7 @@ fis.media( 'dlocal' ).match( '*.html', {
     release: '/$0'
 } );
 
-fis.media( 'dlocal' ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
+fis.media( 'dlocal' ).match( STATIC_PATTERN, {
     useHash: false,
     domain: null
 } );
@@ -366,10 +303,11 @@ for ( var username in REMOTE_TARGET_MAP ) {
                     to: cur.deploy[ selector ]
                 } )
             } );
-            //fis.media( username ).match( '*.{js,less,scss,css,png,jpg,jpeg,gif,es6}', {
-            //   useHash: false,
-            //   domain: null
-            //} );
+            // 默认远程去掉hash和domain
+            fis.media( username ).match( STATIC_PATTERN, {
+               useHash: false,
+               domain: null
+            } );
         }
     } )( username );
 }
@@ -388,7 +326,9 @@ fis.set( 'project.ignore',
         '/**/*.txt',
         '/.watchingignore',
         'online-conf',
-        'node_modules'
+        'node_modules',
+        '/out',
+        '/output'
     ] ) );
 
 //-----------------------------特殊标记替换函数--------------------------//
@@ -511,6 +451,37 @@ function DJANGO_SPECIAL_REPLACE( content, file, settings ) {
 
 function OPTIMIZER_HTML_MIN ( content, file, settings ) {
     return content.replace( />[\s\r\n\t]*</g, '><' );
+}
+
+/**
+ * 自动判断是不是应该添加[[tplroot]]这个标记
+ * @param content
+ * @param file
+ * @param settings
+ * @constructor
+ */
+var autocheckRegs = /\{%\s*(include|extends)\s+(['"])([^'"\{%]+)\2[\s\n]*(with.*)?%\}/g;
+function AUTOCHECK_TPLROOT ( content, file, settings ) {
+    // {% include '/page/index/version.html' with xxx %}
+    // {% include '[[tplroot]]/page/common/native.html' %}
+    // {% extends '/page/api/topic/base.html' %}
+    // {% extends '[[tplroot]]/page/api/topic/base.html' %}
+    // 目标：检测 include 和 extends 指令，如果有 tplroot 前缀则忽略，否则加上
+    var matcharr;
+    var targetres = content;
+    while ( ( matcharr = autocheckRegs.exec( content ) ) !== null ) {
+        var originitem = matcharr[ 0 ];
+        var targetname = matcharr[ 3 ].trim();
+        if ( ( ~ targetname.indexOf( '[[tplroot]]' ) )
+            || ( ~ targetname.indexOf( 'template/' ) )
+            || ( targetname.substr( 0, 1 ) != '/' ) ) continue;
+        var itemreplaced = originitem.replace(
+            targetname,
+            '[[tplroot]]' + targetname
+        );
+        targetres = targetres.replace( originitem, itemreplaced );
+    }
+    return targetres;
 }
 
 function o () {
