@@ -1,6 +1,6 @@
 {
   "name": "fis3-wrapper-common",
-  "version": "1.2.24",
+  "version": "1.2.25",
   "description": "Fis3 Wrapper For Common Resources",
   "bin": {
     "fis3b": "bin/fis3b"
@@ -27,7 +27,7 @@
     "fis-postprocessor-cssprefixer": "0.0.3",
     "fis-postprocessor-jswrapper": "0.0.14",
     "fis-postprocessor-require-async": "0.0.9",
-    "fis3": "^3.3.18",
+    "fis3": "3.3.29",
     "fis3-command-ws": "^1.0.15",
     "fis3-hook-amd": "^0.1.14",
     "fis3-hook-commonjs": "^0.1.14",
